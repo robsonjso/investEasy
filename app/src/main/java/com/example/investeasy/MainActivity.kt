@@ -40,10 +40,31 @@ class MainActivity : AppCompatActivity() {
 
         // Ação para calcular
         calcularBtn.setOnClickListener {
+            // Limpa os erros de validação antes de realizar o cálculo
+            aporteLayout.error = null
+            mesesLayout.error = null
+            jurosLayout.error = null
+
             // Normaliza a entrada substituindo ',' por '.'
             val aporteText = aporteInput.text.toString().replace(',', '.')
             val mesesText = mesesInput.text.toString()
             val jurosText = jurosInput.text.toString().replace(',', '.')
+
+            // Verifica se os campos estão vazios
+            if (aporteText.isEmpty()) {
+                aporteLayout.error = "Preencha o valor do aporte"
+            }
+            if (mesesText.isEmpty()) {
+                mesesLayout.error = "Preencha a quantidade de meses"
+            }
+            if (jurosText.isEmpty()) {
+                jurosLayout.error = "Preencha o percentual de juros"
+            }
+
+            // Se algum campo estiver vazio, a função retorna e não realiza o cálculo
+            if (aporteText.isEmpty() || mesesText.isEmpty() || jurosText.isEmpty()) {
+                return@setOnClickListener
+            }
 
             val aporte = aporteText.toDoubleOrNull() ?: 0.0
             val meses = mesesText.toIntOrNull() ?: 0
@@ -52,6 +73,7 @@ class MainActivity : AppCompatActivity() {
             // Converter juros percentual para decimal
             val jurosMensal = jurosPercentual / 100
 
+            // Realiza o cálculo se os valores forem válidos
             if (aporte > 0 && meses > 0 && jurosMensal > 0) {
                 // Cálculo do valor final e dos rendimentos
                 val montanteFinal = calcularInvestimento(aporte, meses, jurosMensal)
@@ -73,6 +95,9 @@ class MainActivity : AppCompatActivity() {
             jurosInput.text?.clear()
             resultadoInvestimento.visibility = View.GONE
             resultadoRendimentos.visibility = View.GONE
+            aporteLayout.error = null
+            mesesLayout.error = null
+            jurosLayout.error = null
         }
     }
 
